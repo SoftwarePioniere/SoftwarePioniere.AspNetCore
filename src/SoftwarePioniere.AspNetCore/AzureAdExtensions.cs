@@ -24,7 +24,7 @@ namespace SoftwarePioniere.AspNetCore
         public string AdminGroupId { get; set; }
     }
 
-    internal static class AzureAdAuthenticationBuilderExtensions
+    public static class AzureAdAuthenticationBuilderExtensions
     {
         public static AuthenticationBuilder AddAzureAd(this AuthenticationBuilder builder) => builder.AddAzureAd(_ => { });
 

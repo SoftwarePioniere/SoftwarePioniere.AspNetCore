@@ -15,7 +15,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 namespace SoftwarePioniere.AspNetCore
 {
 
-    internal static class SwaggerExtensions
+    public static class SwaggerExtensions
     {
 
         public static void UseMySwagger(this IApplicationBuilder app, Action<MySwaggerOptions> setupAction)
@@ -100,7 +100,7 @@ namespace SoftwarePioniere.AspNetCore
 
     }
 
-    internal class MySwaggerOptions
+    public class MySwaggerOptions
     {
         public string ApiTitle { get; set; }
         public string[] Docs { get; set; }
@@ -112,7 +112,7 @@ namespace SoftwarePioniere.AspNetCore
     }
 
     /// <inheritdoc />
-    internal class SecurityRequirementsOperationFilter : IOperationFilter
+    public class SecurityRequirementsOperationFilter : IOperationFilter
     {
         /// <inheritdoc />
         public void Apply(Operation operation, OperationFilterContext context)
@@ -168,7 +168,7 @@ namespace SoftwarePioniere.AspNetCore
     }
 
     /// <inheritdoc />
-    internal class FormFileOperationFilter : IOperationFilter
+    public class FormFileOperationFilter : IOperationFilter
     {
         private const string FormDataMimeType = "multipart/form-data";
         private static readonly string[] FormFilePropertyNames =
@@ -221,7 +221,7 @@ namespace SoftwarePioniere.AspNetCore
 
     // ReSharper disable once ClassNeverInstantiated.Global
     /// <inheritdoc />
-    internal class SummaryFromOperationFilter : IOperationFilter
+    public class SummaryFromOperationFilter : IOperationFilter
     {
         /// <inheritdoc />
         public void Apply(Operation operation, OperationFilterContext context)

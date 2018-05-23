@@ -24,7 +24,7 @@ namespace SoftwarePioniere.AspNetCore
         public string SwaggerClientSecret { get; set; }
     }
 
-    internal static class Auth0AuthenticationBuilderExtensions
+    public static class Auth0AuthenticationBuilderExtensions
     {       
         public static AuthenticationBuilder AddAuth0(this AuthenticationBuilder builder, Action<Auth0Options> configureOptions)
         {
