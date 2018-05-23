@@ -10,6 +10,7 @@ var target          = Argument("target", "Default");
 var configuration   = Argument("configuration", "Release");
 var isDryRun        = HasArgument("dryrun1");
 
+
 ///////////////////////////////////////////////////////////////////////////////
 // VARIABLES
 ///////////////////////////////////////////////////////////////////////////////
@@ -17,7 +18,9 @@ var isDryRun        = HasArgument("dryrun1");
 var artifactsDirectory  = Directory("./artifacts");
 var version             = "0.0.0";
 var solutionFile        = File("./SoftwarePioniere.AspNetCore.sln");
+var image               = "softwarepioniere/softwarepioniere.aspnetcore";
 var nugetApiKey         = "VSTS";
+var vstsToken           = "XXX";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP/TEARDOWN
@@ -35,7 +38,7 @@ Setup(context =>
     }
 
     MyGitVersion.Init(context); 
-    MyDotNet.Init(context, configuration, isDryRun, packageSource, vstsToken, nugetApiKey);
+    MyDotNet.Init(context, configuration, isDryRun, vstsToken, nugetApiKey);
   
 });
 
@@ -91,6 +94,27 @@ Task("Test")
  
 });
 
+Task("Pack")
+    .IsDependentOn("Clean")
+    .IsDependentOn("Version")
+    .Does(context =>
+{
+    MyDotNet.PackSolution(solutionFile, artifactsDirectory);
+});
+
+Task("PushPackagesLocal")
+    .Does(context =>
+{
+    var packageSource = context.Directory(@"c:\temp\packages-debug");
+    context.Information("PackageSource Dir: {0}", packageSource);
+
+    var settings = new DotNetCoreNuGetPushSettings {
+        Source =  packageSource.Path.FullPath
+    };
+
+    MyDotNet.PushPackages(artifactsDirectory, settings);
+});
+
 Task("DockerBuild")
     .IsDependentOn("Clean")
     .IsDependentOn("Version")    
@@ -100,12 +124,20 @@ Task("DockerBuild")
   
 });
 
-Task("DockerPush")
+Task("DockerPack")
     .IsDependentOn("Clean")
-    .IsDependentOn("Version")    
+    .IsDependentOn("Version")
     .Does(context =>
 {
-    MyDotNet.DockerPush(image);  
+    MyDotNet.DockerPack(image);
+});
+
+Task("DockerPushPackages")
+    .IsDependentOn("Clean")
+    .IsDependentOn("Version")
+    .Does(context =>
+{
+    MyDotNet.DockerPushPackages(image);
 });
 
 
@@ -132,7 +164,7 @@ Task("DockerBuildPush")
     .IsDependentOn("Version")
     .IsDependentOn("DockerBuild")
     .IsDependentOn("DockerPack")
-    .IsDependentOn("DockerPushPackages")
+    // .IsDependentOn("DockerPushPackages")
     ;
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -21,5 +21,5 @@ FROM buildsln as pack
 ARG CONFIGURATION=Release
 ARG NUGETVERSIONV2=99.99.99
 ARG ASSEMBLYSEMVER=99.99.99.99
-RUN dotnet pack /proj/mitarbeiterverwaltung.sln -c $CONFIGURATION --no-restore --no-build /p:NuGetVersionV2=$NUGETVERSIONV2 /p:AssemblySemVer=$ASSEMBLYSEMVER -o /proj/packages
+RUN dotnet pack /proj/SoftwarePioniere.AspNetCore.sln -c $CONFIGURATION --no-restore --no-build /p:NuGetVersionV2=$NUGETVERSIONV2 /p:AssemblySemVer=$ASSEMBLYSEMVER -o /proj/packages
 WORKDIR /proj/packages/

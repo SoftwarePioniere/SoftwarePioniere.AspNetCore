@@ -21,6 +21,8 @@
         <MyVersion>99.99.99</MyVersion>
         <IsPackable>True</IsPackable>
         <Authors>SoftwarePioniere</Authors>
+        <PackageProjectUrl>https://github.com/SoftwarePioniere/SoftwarePioniere.AspNetCore</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/SoftwarePioniere/SoftwarePioniere.AspNetCore</RepositoryUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(NuGetVersionV2)' == '' ">
