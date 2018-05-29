@@ -18,7 +18,7 @@ namespace SoftwarePioniere.AspNetCore
     public static class SwaggerExtensions
     {
 
-        public static void UseMySwagger(this IApplicationBuilder app, Action<MySwaggerOptions> setupAction)
+        public static IApplicationBuilder UseMySwagger(this IApplicationBuilder app, Action<MySwaggerOptions> setupAction)
         {
             app.UseSwagger(c =>
             {
@@ -34,14 +34,16 @@ namespace SoftwarePioniere.AspNetCore
                 {
                     c.SwaggerEndpoint($"/swagger/{doc}/swagger.json", doc);
                 }
-           
+
                 c.OAuthAdditionalQueryStringParams(options.OAuthAdditionalQueryStringParams);
                 c.OAuthClientId(options.OAuthClientId);
                 c.OAuthClientSecret(options.OAuthClientSecret);
             });
+
+            return app;
         }
 
-        public static void AddMySwagger(this IServiceCollection services, Action<MySwaggerOptions> setupAction)
+        public static IApplicationBuilder AddMySwagger(this IServiceCollection services, Action<MySwaggerOptions> setupAction)
         {
             var options = new MySwaggerOptions();
             setupAction(options);
@@ -75,13 +77,15 @@ namespace SoftwarePioniere.AspNetCore
 
                     if (options.Docs.Contains(s))
                         return description.GroupName == s;
-                    
+
                     if (string.IsNullOrEmpty(description.GroupName))
                         return true;
 
                     return description.GroupName != s;
                 });
             });
+
+            return services;
         }
 
 
