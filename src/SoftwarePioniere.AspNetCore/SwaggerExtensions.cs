@@ -43,7 +43,7 @@ namespace SoftwarePioniere.AspNetCore
             return app;
         }
 
-        public static IApplicationBuilder AddMySwagger(this IServiceCollection services, Action<MySwaggerOptions> setupAction)
+        public static IServiceCollection AddMySwagger(this IServiceCollection services, Action<MySwaggerOptions> setupAction)
         {
             var options = new MySwaggerOptions();
             setupAction(options);
