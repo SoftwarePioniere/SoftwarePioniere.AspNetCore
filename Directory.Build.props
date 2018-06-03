@@ -1,5 +1,5 @@
 <Project>
-  
+
   <PropertyGroup>
    <DefaultItemExcludes>$(DefaultItemExcludes);$(MSBuildProjectDirectory)/obj/**/*</DefaultItemExcludes>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(MSBuildProjectDirectory)/bin/**/*</DefaultItemExcludes>
@@ -8,7 +8,7 @@
   <PropertyGroup Condition="'$(DOTNET_RUNNING_IN_CONTAINER)' != 'true'">
     <BaseIntermediateOutputPath>$(MSBuildProjectDirectory)/obj/local/</BaseIntermediateOutputPath>
     <BaseOutputPath>$(MSBuildProjectDirectory)/bin/local/</BaseOutputPath>
-  </PropertyGroup> 
+  </PropertyGroup>
 
   <PropertyGroup Condition="'$(DOTNET_RUNNING_IN_CONTAINER)' == 'true'">
     <BaseIntermediateOutputPath>$(MSBuildProjectDirectory)/obj/container/</BaseIntermediateOutputPath>
@@ -16,11 +16,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
-      <AspNetCoreVersion>2.1.0-rc1-final</AspNetCoreVersion>
-      <CommonLibVersion>0.1.214</CommonLibVersion>    
+      <AspNetCoreVersion>2.1.0</AspNetCoreVersion>
+      <CommonLibVersion>0.1.214</CommonLibVersion>
   </PropertyGroup>
-  
-  <PropertyGroup>     
+
+  <PropertyGroup>
       <MyVersion>99.99.99</MyVersion>
       <IsPackable>True</IsPackable>
       <Authors>SoftwarePioniere</Authors>
@@ -37,15 +37,15 @@
       <AssemblyVersion>$(MyVersion)</AssemblyVersion>
       <FileVersion>$(MyVersion)</FileVersion>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition=" '$(NuGetVersionV2)' != '' ">
         <Version>$(NuGetVersionV2)</Version>
         <InformationalVersion>$(NuGetVersionV2)</InformationalVersion>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition=" '$(AssemblySemVer)' != '' ">
         <AssemblyVersion>$(AssemblySemVer)</AssemblyVersion>
         <FileVersion>$(AssemblySemVer)</FileVersion>
   </PropertyGroup>
-  
+
 </Project>
