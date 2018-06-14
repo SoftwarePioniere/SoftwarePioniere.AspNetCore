@@ -11,6 +11,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace SoftwarePioniere.AspNetCore
 {

@@ -15,6 +15,11 @@
     <BaseOutputPath>$(MSBuildProjectDirectory)/bin/container/</BaseOutputPath>
   </PropertyGroup>
 
+   <PropertyGroup>
+    <noWarn>1591</noWarn>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
   <PropertyGroup>
       <AspNetCoreVersion>2.1.0</AspNetCoreVersion>
       <CommonLibVersion>0.1.214</CommonLibVersion>
