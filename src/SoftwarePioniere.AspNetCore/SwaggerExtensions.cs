@@ -123,11 +123,16 @@ namespace SoftwarePioniere.AspNetCore
         public void Apply(Operation operation, OperationFilterContext context)
         {
             // Policy names map to scopes
-            var controllerScopes = context.ApiDescription.ControllerAttributes()
+//            var controllerScopes = context.ApiDescription.ControllerAttributes()
+//                .OfType<AuthorizeAttribute>()
+//                .Select(attr => attr.Policy);
+
+            var controllerScopes = context.ControllerActionDescriptor.ControllerTypeInfo.GetCustomAttributes()
                 .OfType<AuthorizeAttribute>()
                 .Select(attr => attr.Policy);
 
-            var actionScopes = context.ApiDescription.ActionAttributes()
+
+            var actionScopes = context.ControllerActionDescriptor.MethodInfo.GetCustomAttributes()
                 .OfType<AuthorizeAttribute>()
                 .Select(attr => attr.Policy);
 
@@ -149,12 +154,18 @@ namespace SoftwarePioniere.AspNetCore
             }
             else
             {
-                var controllerAuts = context.ApiDescription.ControllerAttributes()
+//                var controllerAuts = context.ApiDescription.ControllerAttributes()
+//                    .OfType<AuthorizeAttribute>().ToArray();
+//
+//                var actionAuts = context.ApiDescription.ActionAttributes()
+//                    .OfType<AuthorizeAttribute>().ToArray();
+
+                var controllerAuts = context.ControllerActionDescriptor.ControllerTypeInfo.GetCustomAttributes()
                     .OfType<AuthorizeAttribute>().ToArray();
 
-                var actionAuts = context.ApiDescription.ActionAttributes()
+                var actionAuts = context.ControllerActionDescriptor.MethodInfo.GetCustomAttributes()
                     .OfType<AuthorizeAttribute>().ToArray();
-
+                
                 if (controllerAuts.Length > 0 || actionAuts.Length > 0)
                 {
                     operation.Responses.Add("401", new Response { Description = "Unauthorized" });

@@ -80,7 +80,7 @@ namespace SoftwarePioniere.AspNetCore
         }
 
 
-        public static IApplicationBuilder UseSeriLogging(this IApplicationBuilder applicationBuilder)
+        public static IApplicationBuilder UseMySeriLogging(this IApplicationBuilder applicationBuilder)
         {
             var logger = Log.Logger.ForContext(new PropertyEnricher("Method", "Configure"));
 
