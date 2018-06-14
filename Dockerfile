@@ -5,6 +5,7 @@ COPY nuget.config.build.tmp ./nuget.config
 COPY Directory.Build.* ./
 COPY *.sln ./
 COPY src/SoftwarePioniere.AspNetCore/*.csproj ./src/SoftwarePioniere.AspNetCore/
+COPY src/SoftwarePioniere.AspNetCore.SampleApp/*.csproj ./src/SoftwarePioniere.AspNetCore.SampleApp/
 RUN dotnet restore SoftwarePioniere.AspNetCore.sln
 
 FROM restore as src
