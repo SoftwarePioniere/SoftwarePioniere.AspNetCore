@@ -27,7 +27,7 @@ var vstsToken           = "XXX";
 ///////////////////////////////////////////////////////////////////////////////
 
 Setup(context =>
-{         
+{
     vstsToken           = EnvironmentVariable("VSTS_TOKEN") ?? vstsToken;
     nugetApiKey         = EnvironmentVariable("NUGET_API_KEY") ?? nugetApiKey;
 
@@ -37,9 +37,9 @@ Setup(context =>
             throw new System.InvalidOperationException("Please allow VSTS Token Access");
     }
 
-    MyGitVersion.Init(context); 
+    MyGitVersion.Init(context);
     MyDotNet.Init(context, configuration, isDryRun, vstsToken, nugetApiKey);
-  
+
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -48,12 +48,12 @@ Setup(context =>
 
 Task("Version")
  .Does((context) =>
-{    
-    version = MyGitVersion.Calculate(); 
+{
+    version = MyGitVersion.Calculate();
     Information("Version: {0}", version);
     SetBuildNumber(context, version);
 
-    MyGitVersion.WriteArtifacts(artifactsDirectory); 
+    MyGitVersion.WriteArtifacts(artifactsDirectory);
 });
 
 Task("Clean")
@@ -68,7 +68,7 @@ Task("Restore")
     .IsDependentOn("Version")
     .Does(context =>
 {
-    MyDotNet.RestoreSolution(solutionFile);            
+    MyDotNet.RestoreSolution(solutionFile);
 });
 
 Task("Build")
@@ -78,8 +78,8 @@ Task("Build")
     .Does(context =>
 {
 
-    MyDotNet.BuildSolution(solutionFile);   
-   
+    MyDotNet.BuildSolution(solutionFile);
+
 });
 
 
@@ -91,7 +91,7 @@ Task("Test")
     .Does(context =>
 {
     // MyDotNet.TestProjects("./test/**/*.csproj");
- 
+
 });
 
 Task("Pack")
@@ -117,11 +117,11 @@ Task("PushPackagesLocal")
 
 Task("DockerBuild")
     .IsDependentOn("Clean")
-    .IsDependentOn("Version")    
+    .IsDependentOn("Version")
     .Does(context =>
 {
     MyDotNet.DockerBuild(image);
-  
+
 });
 
 Task("DockerPack")
@@ -159,12 +159,19 @@ Task("BuildTestPackLocalPush")
     ;
 
 
-Task("DockerBuildPush") 
+Task("DockerBuildPush")
     .IsDependentOn("Clean")
     .IsDependentOn("Version")
     .IsDependentOn("DockerBuild")
     .IsDependentOn("DockerPack")
     .IsDependentOn("DockerPushPackages")
+    ;
+
+Task("DockerBuildPack")
+    .IsDependentOn("Clean")
+    .IsDependentOn("Version")
+    .IsDependentOn("DockerBuild")
+    .IsDependentOn("DockerPack")
     ;
 
 ///////////////////////////////////////////////////////////////////////////////
