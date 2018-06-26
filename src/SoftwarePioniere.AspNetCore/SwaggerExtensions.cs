@@ -21,6 +21,8 @@ namespace SoftwarePioniere.AspNetCore
 
         public static IApplicationBuilder UseMySwagger(this IApplicationBuilder app, Action<MySwaggerOptions> setupAction)
         {
+           
+
             app.UseSwagger(c =>
             {
                 c.PreSerializeFilters.Add((swagger, httpReq) => swagger.Host = httpReq.Host.Value);

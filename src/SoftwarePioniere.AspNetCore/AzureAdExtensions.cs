@@ -30,8 +30,10 @@ namespace SoftwarePioniere.AspNetCore
 
         public static AuthenticationBuilder AddAzureAd(this AuthenticationBuilder builder, Action<AzureAdOptions> configureOptions)
         {
-            builder.Services.Configure(configureOptions);
+            Console.WriteLine("AddAzureAd");
 
+            Console.WriteLine("AddAzureAd: Adding Configuration");
+            builder.Services.Configure(configureOptions);
             var settings = builder.Services.BuildServiceProvider().GetService<IOptions<AzureAdOptions>>().Value;
 
             var tokenValParam = new TokenValidationParameters()
@@ -49,6 +51,7 @@ namespace SoftwarePioniere.AspNetCore
                 tokenValParam.IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(settings.IssuerSigningKey));
             }
 
+            Console.WriteLine("AddAzureAd: Adding JwtBeaerer");
             builder.AddJwtBearer(options =>
             {
                 options.Audience = settings.Resource;
@@ -59,6 +62,7 @@ namespace SoftwarePioniere.AspNetCore
                 options.TokenValidationParameters = tokenValParam;
             });
 
+            Console.WriteLine("AddAzureAd: Adding AddAuthorization Admin Policy");
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("admin", policy => policy.RequireClaim("groups", settings.AdminGroupId));

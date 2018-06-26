@@ -34,12 +34,16 @@ namespace SoftwarePioniere.AspNetCore
         public static void ConfigureSerilog(this WebHostBuilderContext webHostBuilderContext,
             LoggerConfiguration loggerConfiguration)
         {
+            Console.WriteLine("ConfigureSerilog");
+
             var assembly = Assembly.GetEntryAssembly();
             var title = assembly.GetCustomAttribute<AssemblyTitleAttribute>()?.Title ?? assembly.GetName().Name;
 
             var appInsightsKey = webHostBuilderContext.Configuration.GetSection("ApplicationInsights").GetValue<string>("InstrumentationKey");
 
             if (!string.IsNullOrEmpty(appInsightsKey)) {
+                Console.WriteLine("ConfigureSerilog:: Creating TelemetryClient");
+
                 _telemetryClient = new TelemetryClient()
                 {
                     InstrumentationKey = appInsightsKey
@@ -64,12 +68,14 @@ namespace SoftwarePioniere.AspNetCore
                 ;
 
             if (!string.IsNullOrEmpty(appInsightsKey)) {
+                Console.WriteLine("ConfigureSerilog:: Adding ApplicationInsightsTraces");
                 loggerConfiguration.WriteTo.ApplicationInsightsTraces(_telemetryClient);
             }
 
             var debugSources = webHostBuilderContext.Configuration.GetValue<string>("DebugSources");
             if (!string.IsNullOrEmpty(debugSources))
             {
+                Console.WriteLine("ConfigureSerilog:: Adding DebugSources");
                 foreach (var source in debugSources.Split(';'))
                     loggerConfiguration.MinimumLevel.Override(source, LogEventLevel.Verbose);
             }

@@ -28,10 +28,13 @@ namespace SoftwarePioniere.AspNetCore
     {       
         public static AuthenticationBuilder AddAuth0(this AuthenticationBuilder builder, Action<Auth0Options> configureOptions)
         {
-            builder.Services.Configure(configureOptions);
+            Console.WriteLine("AddAuth0");
 
+            Console.WriteLine("AddAuth0: Adding Configuration");
+            builder.Services.Configure(configureOptions);
             var settings = builder.Services.BuildServiceProvider().GetService<IOptions<Auth0Options>>().Value;
 
+            Console.WriteLine("AddAuth0: Adding JwtBeaerer");
             builder.AddJwtBearer(options =>
             {
                 options.Audience = settings.Audience;
@@ -56,6 +59,7 @@ namespace SoftwarePioniere.AspNetCore
                 };
             });
 
+            Console.WriteLine("AddAuth0: Adding AddAuthorization Admin Policy");
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("admin", policy => policy.RequireClaim(settings.GroupClaimType, settings.AdminGroupId));
