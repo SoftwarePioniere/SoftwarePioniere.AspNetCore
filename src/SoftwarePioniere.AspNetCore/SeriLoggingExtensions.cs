@@ -41,7 +41,8 @@ namespace SoftwarePioniere.AspNetCore
 
             var appInsightsKey = webHostBuilderContext.Configuration.GetSection("ApplicationInsights").GetValue<string>("InstrumentationKey");
 
-            if (!string.IsNullOrEmpty(appInsightsKey)) {
+            if (!string.IsNullOrEmpty(appInsightsKey))
+            {
                 Console.WriteLine("ConfigureSerilog:: Creating TelemetryClient");
 
                 _telemetryClient = new TelemetryClient()
@@ -50,24 +51,24 @@ namespace SoftwarePioniere.AspNetCore
                 };
             }
 
-           // var loggerConfiguration = new LoggerConfiguration()
-                loggerConfiguration.MinimumLevelDebugOnDev(webHostBuilderContext.HostingEnvironment)
-                    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                    .MinimumLevel.Override("SoftwarePioniere", LogEventLevel.Information)
-                    .MinimumLevel.Override("System", LogEventLevel.Warning)
-                    .Enrich.FromLogContext()
-                    .Enrich.WithMachineName()
-                    .Enrich.WithThreadId()
-                    .Enrich.WithProperty("Application", title)
-                    .WriteTo.LiterateConsole(
-                        outputTemplate:
-                        "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}")
-                    .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day)
+            loggerConfiguration.MinimumLevelDebugOnDev(webHostBuilderContext.HostingEnvironment)
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                .MinimumLevel.Override("SoftwarePioniere", LogEventLevel.Information)
+                .MinimumLevel.Override("System", LogEventLevel.Warning)
+                .Enrich.FromLogContext()
+                .Enrich.WithMachineName()
+                .Enrich.WithThreadId()
+                .Enrich.WithProperty("Application", title)
+                .WriteTo.LiterateConsole(
+                    outputTemplate:
+                    "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}")
+                .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day,
+                    outputTemplate:
+                    "[{Timestamp:HH:mm:ss}] [{Level:u3}] [{SourceContext}] {Message} {Exception}{NewLine}")
+            ;
 
-                //  .WriteTo.ApplicationInsightsEvents(appInsightsKey)
-                ;
-
-            if (!string.IsNullOrEmpty(appInsightsKey)) {
+            if (!string.IsNullOrEmpty(appInsightsKey))
+            {
                 Console.WriteLine("ConfigureSerilog:: Adding ApplicationInsightsTraces");
                 loggerConfiguration.WriteTo.ApplicationInsightsTraces(_telemetryClient);
             }
@@ -77,12 +78,12 @@ namespace SoftwarePioniere.AspNetCore
             {
                 Console.WriteLine("ConfigureSerilog:: Adding DebugSources");
                 foreach (var source in debugSources.Split(';'))
+                {
+                    Console.WriteLine($"ConfigureSerilog:: Adding DebugSource {source}");
                     loggerConfiguration.MinimumLevel.Override(source, LogEventLevel.Verbose);
+                }
             }
 
-          //  var serilogger = loggerConfiguration.CreateLogger();
-        //    Log.Logger = serilogger;
-          //  loggingBuilder.AddSerilog(serilogger);
         }
 
 
@@ -94,7 +95,8 @@ namespace SoftwarePioniere.AspNetCore
 
             appLifetime.ApplicationStarted.Register(() => { logger.Information("Application Started!!"); });
 
-            if (_telemetryClient != null) {
+            if (_telemetryClient != null)
+            {
                 appLifetime.ApplicationStopped.Register(() => { _telemetryClient.Flush(); });
             }
 
