@@ -21,7 +21,7 @@ namespace SoftwarePioniere.AspNetCore
 
         public static IApplicationBuilder UseMySwagger(this IApplicationBuilder app, Action<MySwaggerOptions> setupAction)
         {
-           
+
 
             app.UseSwagger(c =>
             {
@@ -38,7 +38,10 @@ namespace SoftwarePioniere.AspNetCore
                     c.SwaggerEndpoint($"/swagger/{doc}/swagger.json", doc);
                 }
 
-                c.OAuthAdditionalQueryStringParams(options.OAuthAdditionalQueryStringParams);
+                if (options.OAuthAdditionalQueryStringParams != null)
+                {
+                    c.OAuthAdditionalQueryStringParams(options.OAuthAdditionalQueryStringParams);
+                }
                 c.OAuthClientId(options.OAuthClientId);
                 c.OAuthClientSecret(options.OAuthClientSecret);
             });
@@ -125,9 +128,9 @@ namespace SoftwarePioniere.AspNetCore
         public void Apply(Operation operation, OperationFilterContext context)
         {
             // Policy names map to scopes
-//            var controllerScopes = context.ApiDescription.ControllerAttributes()
-//                .OfType<AuthorizeAttribute>()
-//                .Select(attr => attr.Policy);
+            //            var controllerScopes = context.ApiDescription.ControllerAttributes()
+            //                .OfType<AuthorizeAttribute>()
+            //                .Select(attr => attr.Policy);
 
             var controllerScopes = context.ControllerActionDescriptor.ControllerTypeInfo.GetCustomAttributes()
                 .OfType<AuthorizeAttribute>()
@@ -156,18 +159,18 @@ namespace SoftwarePioniere.AspNetCore
             }
             else
             {
-//                var controllerAuts = context.ApiDescription.ControllerAttributes()
-//                    .OfType<AuthorizeAttribute>().ToArray();
-//
-//                var actionAuts = context.ApiDescription.ActionAttributes()
-//                    .OfType<AuthorizeAttribute>().ToArray();
+                //                var controllerAuts = context.ApiDescription.ControllerAttributes()
+                //                    .OfType<AuthorizeAttribute>().ToArray();
+                //
+                //                var actionAuts = context.ApiDescription.ActionAttributes()
+                //                    .OfType<AuthorizeAttribute>().ToArray();
 
                 var controllerAuts = context.ControllerActionDescriptor.ControllerTypeInfo.GetCustomAttributes()
                     .OfType<AuthorizeAttribute>().ToArray();
 
                 var actionAuts = context.ControllerActionDescriptor.MethodInfo.GetCustomAttributes()
                     .OfType<AuthorizeAttribute>().ToArray();
-                
+
                 if (controllerAuts.Length > 0 || actionAuts.Length > 0)
                 {
                     operation.Responses.Add("401", new Response { Description = "Unauthorized" });

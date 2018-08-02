@@ -61,7 +61,7 @@ namespace SoftwarePioniere.AspNetCore
                 .Enrich.WithProperty("Application", title)
                 .WriteTo.LiterateConsole(
                     outputTemplate:
-                    "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}")
+                    "[{Timestamp:HH:mm:ss} {Level}] [{SourceContext}] {Message} {Exception}{NewLine}")
                 .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day,
                     outputTemplate:
                     "[{Timestamp:HH:mm:ss}] [{Level:u3}] [{SourceContext}] {Message} {Exception}{NewLine}")
