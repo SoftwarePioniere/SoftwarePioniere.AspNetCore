@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Swashbuckle.AspNetCore.Filters;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 // ReSharper disable UnusedMember.Global
@@ -71,7 +72,7 @@ namespace SoftwarePioniere.AspNetCore
                 }
 
                 c.DescribeAllEnumsAsStrings();
-                c.OperationFilter<FormFileOperationFilter>();
+                //    c.OperationFilter<FormFileOperationFilter>();
                 c.OperationFilter<SummaryFromOperationFilter>();
 
                 c.AddSecurityDefinition("oauth2", options.OAuth2Scheme);
@@ -121,124 +122,57 @@ namespace SoftwarePioniere.AspNetCore
         public string OAuthClientSecret { get; set; }
     }
 
-    /// <inheritdoc />
-    public class SecurityRequirementsOperationFilter : IOperationFilter
-    {
-        /// <inheritdoc />
-        public void Apply(Operation operation, OperationFilterContext context)
-        {
-            // Policy names map to scopes
-            //            var controllerScopes = context.ApiDescription.ControllerAttributes()
-            //                .OfType<AuthorizeAttribute>()
-            //                .Select(attr => attr.Policy);
+    ///// <inheritdoc />
+    //public class FormFileOperationFilter : IOperationFilter
+    //{
+    //    private const string FormDataMimeType = "multipart/form-data";
+    //    private static readonly string[] FormFilePropertyNames =
+    //        typeof(IFormFile).GetTypeInfo().DeclaredProperties.Select(x => x.Name).ToArray();
 
-            var controllerScopes = context.ControllerActionDescriptor.ControllerTypeInfo.GetCustomAttributes()
-                .OfType<AuthorizeAttribute>()
-                .Select(attr => attr.Policy);
+    //    /// <inheritdoc />
+    //    public void Apply(Operation operation, OperationFilterContext context)
+    //    {
+    //        if (operation.OperationId == "bildupload")
+    //        {
+    //            Console.WriteLine("a");
+    //        }
+    //        if (context.ApiDescription.ParameterDescriptions.Any(x => x.ModelMetadata != null && x.ModelMetadata.ContainerType == typeof(IFormFile)))
+    //        {
+    //            var formFileParameters = operation
+    //                .Parameters
+    //                .OfType<NonBodyParameter>()
+    //                .Where(x => FormFilePropertyNames.Contains(x.Name))
+    //                .ToArray();
+    //            var index = operation.Parameters.IndexOf(formFileParameters.First());
+    //            foreach (var formFileParameter in formFileParameters)
+    //            {
+    //                operation.Parameters.Remove(formFileParameter);
+    //            }
 
+    //            var formFileParameterName = context
+    //                .ApiDescription
+    //                .ActionDescriptor
+    //                .Parameters
+    //                .Where(x => x.ParameterType == typeof(IFormFile))
+    //                .Select(x => x.Name)
+    //                .First();
+    //            var parameter = new NonBodyParameter()
+    //            {
+    //                Name = formFileParameterName,
+    //                In = "formData",
+    //                Description = "The file to upload.",
+    //                Required = true,
+    //                Type = "file"
+    //            };
+    //            operation.Parameters.Insert(index, parameter);
 
-            var actionScopes = context.ControllerActionDescriptor.MethodInfo.GetCustomAttributes()
-                .OfType<AuthorizeAttribute>()
-                .Select(attr => attr.Policy);
-
-            var requiredScopes = controllerScopes.Union(actionScopes).Distinct().Where(x => !string.IsNullOrEmpty(x))
-                .ToArray();
-
-            if (requiredScopes.Any())
-            {
-                operation.Responses.Add("401", new Response { Description = "Unauthorized" });
-                operation.Responses.Add("403", new Response { Description = "Forbidden" });
-
-                operation.Security = new List<IDictionary<string, IEnumerable<string>>>
-                {
-                    new Dictionary<string, IEnumerable<string>>
-                    {
-                        {"oauth2", requiredScopes.Where(x => !string.IsNullOrEmpty(x))}
-                    }
-                };
-            }
-            else
-            {
-                //                var controllerAuts = context.ApiDescription.ControllerAttributes()
-                //                    .OfType<AuthorizeAttribute>().ToArray();
-                //
-                //                var actionAuts = context.ApiDescription.ActionAttributes()
-                //                    .OfType<AuthorizeAttribute>().ToArray();
-
-                var controllerAuts = context.ControllerActionDescriptor.ControllerTypeInfo.GetCustomAttributes()
-                    .OfType<AuthorizeAttribute>().ToArray();
-
-                var actionAuts = context.ControllerActionDescriptor.MethodInfo.GetCustomAttributes()
-                    .OfType<AuthorizeAttribute>().ToArray();
-
-                if (controllerAuts.Length > 0 || actionAuts.Length > 0)
-                {
-                    operation.Responses.Add("401", new Response { Description = "Unauthorized" });
-                    operation.Responses.Add("403", new Response { Description = "Forbidden" });
-
-                    operation.Security = new List<IDictionary<string, IEnumerable<string>>>
-                    {
-                        new Dictionary<string, IEnumerable<string>>
-                        {
-                            {"oauth2", new List<string>()}
-                        }
-                    };
-                }
-            }
-        }
-    }
-
-    /// <inheritdoc />
-    public class FormFileOperationFilter : IOperationFilter
-    {
-        private const string FormDataMimeType = "multipart/form-data";
-        private static readonly string[] FormFilePropertyNames =
-            typeof(IFormFile).GetTypeInfo().DeclaredProperties.Select(x => x.Name).ToArray();
-
-        /// <inheritdoc />
-        public void Apply(Operation operation, OperationFilterContext context)
-        {
-            if (operation.OperationId == "bildupload")
-            {
-                Console.WriteLine("a");
-            }
-            if (context.ApiDescription.ParameterDescriptions.Any(x => x.ModelMetadata != null && x.ModelMetadata.ContainerType == typeof(IFormFile)))
-            {
-                var formFileParameters = operation
-                    .Parameters
-                    .OfType<NonBodyParameter>()
-                    .Where(x => FormFilePropertyNames.Contains(x.Name))
-                    .ToArray();
-                var index = operation.Parameters.IndexOf(formFileParameters.First());
-                foreach (var formFileParameter in formFileParameters)
-                {
-                    operation.Parameters.Remove(formFileParameter);
-                }
-
-                var formFileParameterName = context
-                    .ApiDescription
-                    .ActionDescriptor
-                    .Parameters
-                    .Where(x => x.ParameterType == typeof(IFormFile))
-                    .Select(x => x.Name)
-                    .First();
-                var parameter = new NonBodyParameter()
-                {
-                    Name = formFileParameterName,
-                    In = "formData",
-                    Description = "The file to upload.",
-                    Required = true,
-                    Type = "file"
-                };
-                operation.Parameters.Insert(index, parameter);
-
-                if (!operation.Consumes.Contains(FormDataMimeType))
-                {
-                    operation.Consumes.Add(FormDataMimeType);
-                }
-            }
-        }
-    }
+    //            if (!operation.Consumes.Contains(FormDataMimeType))
+    //            {
+    //                operation.Consumes.Add(FormDataMimeType);
+    //            }
+    //        }
+    //    }
+    //}
 
     // ReSharper disable once ClassNeverInstantiated.Global
     /// <inheritdoc />

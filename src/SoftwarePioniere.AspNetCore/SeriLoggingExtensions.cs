@@ -32,7 +32,7 @@ namespace SoftwarePioniere.AspNetCore
         }
 
         public static void ConfigureSerilog(this WebHostBuilderContext webHostBuilderContext,
-            LoggerConfiguration loggerConfiguration)
+            LoggerConfiguration loggerConfiguration, string logdir = "logs")
         {
             Console.WriteLine("ConfigureSerilog");
 
@@ -62,7 +62,7 @@ namespace SoftwarePioniere.AspNetCore
                 .WriteTo.LiterateConsole(
                     outputTemplate:
                     "[{Timestamp:HH:mm:ss} {Level}] [{SourceContext}] {Message} {Exception}{NewLine}")
-                .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day,
+                .WriteTo.File($"{logdir}/log.txt", rollingInterval: RollingInterval.Day,
                     outputTemplate:
                     "[{Timestamp:HH:mm:ss}] [{Level:u3}] [{SourceContext}] {Message} {Exception}{NewLine}")
             ;
