@@ -14,7 +14,7 @@ namespace SoftwarePioniere.AspNetCore.SampleApp
         /// </summary>
         /// <returns></returns>
         [HttpGet("info")]
-        [SwaggerOperation("GetApiInfo")]
+        [SwaggerOperation(Summary = "GetApiInfo" , Description = "GetApiInfo_Description")]
         public ActionResult<ApiInfo> GetApiInfo()
         {
             var assembly = Assembly.GetEntryAssembly();
@@ -22,7 +22,7 @@ namespace SoftwarePioniere.AspNetCore.SampleApp
             return new ApiInfo
             {
                 Title = assembly.GetCustomAttribute<AssemblyTitleAttribute>()?.Title ?? assembly.GetName().Name,
-                Version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion,               
+                Version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion,
             };
         }
     }

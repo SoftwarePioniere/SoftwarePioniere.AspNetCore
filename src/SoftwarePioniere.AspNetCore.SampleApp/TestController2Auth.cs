@@ -32,7 +32,7 @@ namespace SoftwarePioniere.AspNetCore.SampleApp
         [HttpGet("info2")]
         [AllowAnonymous]
         [SwaggerOperation("GetApiInfo2")]
-        public ActionResult<ApiInfo> GetApiInfo()
+        public ActionResult<ApiInfo> GetApiInfo2()
         {
             var assembly = Assembly.GetEntryAssembly();
 

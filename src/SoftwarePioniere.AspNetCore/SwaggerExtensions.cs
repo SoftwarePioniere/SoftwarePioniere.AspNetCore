@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.Filters;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -71,6 +72,7 @@ namespace SoftwarePioniere.AspNetCore
                 c.DescribeAllEnumsAsStrings();
                 //    c.OperationFilter<FormFileOperationFilter>();
                 c.OperationFilter<SummaryFromOperationFilter>();
+
 
                 c.AddSecurityDefinition("oauth2", options.OAuth2Scheme);
 
@@ -178,9 +180,24 @@ namespace SoftwarePioniere.AspNetCore
         /// <inheritdoc />
         public void Apply(Operation operation, OperationFilterContext context)
         {
-            if (string.IsNullOrEmpty(operation.Summary) && !string.IsNullOrEmpty(operation.OperationId))
+
+            var swagOp = context.MethodInfo.GetCustomAttributes(true)
+                .OfType<SwaggerOperationAttribute>()
+                .FirstOrDefault();
+
+#if DEBUG
+            Console.WriteLine($"OperationId: {operation.OperationId} , Summary: {operation.Summary}, Description: {operation.Description}");
+
+            if (swagOp != null)
             {
-                operation.Summary = operation.OperationId;
+                Console.WriteLine($"OperationId: {operation.OperationId} , SwaggerOperationAttributeSummary: {swagOp.Summary}");
+            }
+#endif
+
+            if (string.IsNullOrEmpty(operation.Summary) && swagOp != null && !string.IsNullOrEmpty(swagOp.Summary))
+            {
+
+                operation.Summary = swagOp.Summary;
             }
         }
     }
