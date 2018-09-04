@@ -18,7 +18,7 @@ namespace SoftwarePioniere.AspNetCore.SampleApp
         /// </summary>
         /// <returns></returns>
         [HttpGet("claims")]      
-        [SwaggerOperation("GetIdentityClaims2")]
+        [SwaggerOperation(OperationId = "GetIdentityClaims2")]
         public ActionResult<ClaimInfo[]> GetClaims()
         {
             return User.Claims.Select(c => new ClaimInfo { Type = c.Type, Value = c.Value }).ToArray();
@@ -31,7 +31,7 @@ namespace SoftwarePioniere.AspNetCore.SampleApp
         /// <returns></returns>
         [HttpGet("info2")]
         [AllowAnonymous]
-        [SwaggerOperation("GetApiInfo2")]
+        [SwaggerOperation(OperationId = "GetApiInfo2")]
         public ActionResult<ApiInfo> GetApiInfo2()
         {
             var assembly = Assembly.GetEntryAssembly();

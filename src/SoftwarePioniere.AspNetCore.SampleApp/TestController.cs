@@ -5,7 +5,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace SoftwarePioniere.AspNetCore.SampleApp
 {
- 
+
     [Route("api/test")]
     [ApiController]
     [ApiExplorerSettings(GroupName = "test")]
@@ -18,7 +18,7 @@ namespace SoftwarePioniere.AspNetCore.SampleApp
         /// <returns></returns>
         [HttpGet("claims")]
         [Authorize]
-        [SwaggerOperation("GetIdentityClaims")]
+        [SwaggerOperation(OperationId = "GetIdentityClaims")]
         public ActionResult<ClaimInfo[]> GetClaims()
         {
             return User.Claims.Select(c => new ClaimInfo { Type = c.Type, Value = c.Value }).ToArray();
@@ -26,7 +26,7 @@ namespace SoftwarePioniere.AspNetCore.SampleApp
 
         [HttpGet("claims/admin")]
         [Authorize(Policy = "admin")]
-        [SwaggerOperation("GetIdentityClaimsAdmin")]
+        [SwaggerOperation(OperationId = "GetIdentityClaimsAdmin")]
         public ActionResult<ClaimInfo[]> GetClaimsAdmin()
         {
             return User.Claims.Select(c => new ClaimInfo { Type = c.Type, Value = c.Value }).ToArray();

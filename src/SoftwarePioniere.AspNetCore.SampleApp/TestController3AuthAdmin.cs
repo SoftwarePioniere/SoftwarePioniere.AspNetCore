@@ -17,7 +17,7 @@ namespace SoftwarePioniere.AspNetCore.SampleApp
         /// </summary>
         /// <returns></returns>
         [HttpGet("claims")]      
-        [SwaggerOperation("GetIdentityClaims3")]
+        [SwaggerOperation(OperationId = "GetIdentityClaims3")]
         public ActionResult<ClaimInfo[]> GetClaims()
         {
             return User.Claims.Select(c => new ClaimInfo { Type = c.Type, Value = c.Value }).ToArray();

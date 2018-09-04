@@ -14,7 +14,7 @@ namespace SoftwarePioniere.AspNetCore.SampleApp
         /// </summary>
         /// <returns></returns>
         [HttpGet("info")]
-        [SwaggerOperation(Summary = "GetApiInfo" , Description = "GetApiInfo_Description")]
+        [SwaggerOperation(OperationId = "GetApiInfo")]
         public ActionResult<ApiInfo> GetApiInfo()
         {
             var assembly = Assembly.GetEntryAssembly();
