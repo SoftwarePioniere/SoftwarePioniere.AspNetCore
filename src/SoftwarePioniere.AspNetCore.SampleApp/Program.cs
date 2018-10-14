@@ -69,6 +69,7 @@ namespace SoftwarePioniere.AspNetCore.SampleApp
                 c.ApiTitle = "Test Api";
                 c.Docs = new[] { "api", "test" };
                 c.XmlFiles = new string[0];
+                c.OAuth2SchemeName = "my_app_auth0";
 
                 var scopes = new Dictionary<string, string>();
 
@@ -78,8 +79,7 @@ namespace SoftwarePioniere.AspNetCore.SampleApp
                     Type = "oauth2",
                     Flow = "implicit",
                     AuthorizationUrl = $"{auth0Options.Domain}authorize",
-                    Scopes = scopes,
-                    TokenUrl = $"{auth0Options.Domain}oauth/token"
+                    Scopes = scopes
                 };
             });
         }

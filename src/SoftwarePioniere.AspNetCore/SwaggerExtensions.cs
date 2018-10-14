@@ -39,7 +39,7 @@ namespace SoftwarePioniere.AspNetCore
                 if (options.OAuthAdditionalQueryStringParams != null)
                 {
                     c.OAuthAdditionalQueryStringParams(options.OAuthAdditionalQueryStringParams);
-                }
+                }                
                 c.OAuthClientId(options.OAuthClientId);
                 c.OAuthClientSecret(options.OAuthClientSecret);
             });
@@ -74,7 +74,7 @@ namespace SoftwarePioniere.AspNetCore
                 c.OperationFilter<AppendAuthorizeToSummaryOperationFilter>();
                 c.OperationFilter<SummaryFromOperationFilter>();
 
-                c.AddSecurityDefinition("oauth2", options.OAuth2Scheme);
+                c.AddSecurityDefinition(options.OAuth2SchemeName, options.OAuth2Scheme);
 
                 c.DocInclusionPredicate((s, description) =>
                 {
@@ -117,6 +117,7 @@ namespace SoftwarePioniere.AspNetCore
         public Dictionary<string, string> OAuthAdditionalQueryStringParams { get; set; }
         public string OAuthClientId { get; set; }
         public string OAuthClientSecret { get; set; }
+        public string OAuth2SchemeName { get; set; }
     }
 
     ///// <inheritdoc />
