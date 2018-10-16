@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Filters;
 using Swashbuckle.AspNetCore.Swagger;
@@ -70,10 +72,12 @@ namespace SoftwarePioniere.AspNetCore
 
                 c.EnableAnnotations();
                 c.DescribeAllEnumsAsStrings();
-                //    c.OperationFilter<FormFileOperationFilter>();
+                c.OperationFilter<FormFileOperationFilter>();
                 c.OperationFilter<AppendAuthorizeToSummaryOperationFilter>();
                 c.OperationFilter<SummaryFromOperationFilter>();
 
+                if (string.IsNullOrEmpty(options.OAuth2SchemeName))
+                    throw new ArgumentNullException("options.OAuth2SchemeName");
                 c.AddSecurityDefinition(options.OAuth2SchemeName, options.OAuth2Scheme);
 
                 c.DocInclusionPredicate((s, description) =>
@@ -91,8 +95,7 @@ namespace SoftwarePioniere.AspNetCore
 
             return services;
         }
-
-
+        
         public static void IncludeXmlCommentsIfExist(this SwaggerGenOptions swaggerGenOptions, string fileName)
         {
             //var xmlFileName = Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, fileName);
@@ -120,57 +123,68 @@ namespace SoftwarePioniere.AspNetCore
         public string OAuth2SchemeName { get; set; }
     }
 
-    ///// <inheritdoc />
-    //public class FormFileOperationFilter : IOperationFilter
-    //{
-    //    private const string FormDataMimeType = "multipart/form-data";
-    //    private static readonly string[] FormFilePropertyNames =
-    //        typeof(IFormFile).GetTypeInfo().DeclaredProperties.Select(x => x.Name).ToArray();
+   /// <summary>
+        /// Filter to enable handling file upload in swagger
+        /// </summary>
+        public class FormFileOperationFilter : IOperationFilter
+        {
+            private const string FormDataMimeType = "multipart/form-data";
+            private static readonly string[] FormFilePropertyNames = typeof(IFormFile).GetTypeInfo().DeclaredProperties.Select(p => p.Name).ToArray();
 
-    //    /// <inheritdoc />
-    //    public void Apply(Operation operation, OperationFilterContext context)
-    //    {
-    //        if (operation.OperationId == "bildupload")
-    //        {
-    //            Console.WriteLine("a");
-    //        }
-    //        if (context.ApiDescription.ParameterDescriptions.Any(x => x.ModelMetadata != null && x.ModelMetadata.ContainerType == typeof(IFormFile)))
-    //        {
-    //            var formFileParameters = operation
-    //                .Parameters
-    //                .OfType<NonBodyParameter>()
-    //                .Where(x => FormFilePropertyNames.Contains(x.Name))
-    //                .ToArray();
-    //            var index = operation.Parameters.IndexOf(formFileParameters.First());
-    //            foreach (var formFileParameter in formFileParameters)
-    //            {
-    //                operation.Parameters.Remove(formFileParameter);
-    //            }
+            public void Apply(Operation operation, OperationFilterContext context)
+            {
+                var parameters = operation.Parameters;
+                if (parameters == null || parameters.Count == 0) return;
 
-    //            var formFileParameterName = context
-    //                .ApiDescription
-    //                .ActionDescriptor
-    //                .Parameters
-    //                .Where(x => x.ParameterType == typeof(IFormFile))
-    //                .Select(x => x.Name)
-    //                .First();
-    //            var parameter = new NonBodyParameter()
-    //            {
-    //                Name = formFileParameterName,
-    //                In = "formData",
-    //                Description = "The file to upload.",
-    //                Required = true,
-    //                Type = "file"
-    //            };
-    //            operation.Parameters.Insert(index, parameter);
+                var formFileParameterNames = new List<string>();
+                var formFileSubParameterNames = new List<string>();
 
-    //            if (!operation.Consumes.Contains(FormDataMimeType))
-    //            {
-    //                operation.Consumes.Add(FormDataMimeType);
-    //            }
-    //        }
-    //    }
-    //}
+                foreach (var actionParameter in context.ApiDescription.ActionDescriptor.Parameters)
+                {
+                    var properties =
+                        actionParameter.ParameterType.GetProperties()
+                            .Where(p => p.PropertyType == typeof(IFormFile))
+                            .Select(p => p.Name)
+                            .ToArray();
+
+                    if (properties.Length != 0)
+                    {
+                        formFileParameterNames.AddRange(properties);
+                        formFileSubParameterNames.AddRange(properties);
+                        continue;
+                    }
+
+                    if (actionParameter.ParameterType != typeof(IFormFile)) continue;
+                    formFileParameterNames.Add(actionParameter.Name);
+                }
+
+                if (!formFileParameterNames.Any()) return;
+
+                var consumes = operation.Consumes;
+                consumes.Clear();
+                consumes.Add(FormDataMimeType);
+
+                foreach (var parameter in parameters.ToArray())
+                {
+                    if (!(parameter is NonBodyParameter) || parameter.In != "formData") continue;
+
+                    if (formFileSubParameterNames.Any(p => parameter.Name.StartsWith(p + "."))
+                        || FormFilePropertyNames.Contains(parameter.Name))
+                        parameters.Remove(parameter);
+                }
+
+                foreach (var formFileParameter in formFileParameterNames)
+                {
+                    parameters.Add(new NonBodyParameter()
+                    {
+                        Name = formFileParameter,
+                        Type = "file",
+                        In = "formData"
+                    });
+                }
+            }
+        }
+
 
     // ReSharper disable once ClassNeverInstantiated.Global
     /// <inheritdoc />
