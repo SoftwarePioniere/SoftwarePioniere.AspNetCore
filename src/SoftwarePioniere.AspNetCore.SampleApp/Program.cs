@@ -69,9 +69,9 @@ namespace SoftwarePioniere.AspNetCore.SampleApp
                 c.ApiTitle = "Test Api";
                 c.Docs = new[] { "api", "test" };
                 c.XmlFiles = new string[0];
-                c.OAuth2SchemeName = "my_app_auth0";
-
+                
                 var scopes = new Dictionary<string, string>();
+                scopes.Add("admin", "admin access");
 
                 var auth0Options = services.BuildServiceProvider().GetService<IOptions<Auth0Options>>().Value;
                 c.OAuth2Scheme = new OAuth2Scheme
