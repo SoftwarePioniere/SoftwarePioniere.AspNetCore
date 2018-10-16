@@ -25,8 +25,8 @@ namespace SoftwarePioniere.AspNetCore
     }
 
     public static class Auth0AuthenticationBuilderExtensions
-    {       
-        public static AuthenticationBuilder AddAuth0(this AuthenticationBuilder builder, Action<Auth0Options> configureOptions)
+    {
+        public static AuthenticationBuilder AddAuth0(this AuthenticationBuilder builder, Action<Auth0Options> configureOptions, string[] contextTokenAddPaths = null)
         {
             Console.WriteLine("AddAuth0");
 
@@ -54,7 +54,41 @@ namespace SoftwarePioniere.AspNetCore
                             }
                         }
 
-                        return Task.FromResult(0);
+                        return Task.CompletedTask;
+                    },
+
+                    OnMessageReceived = context =>
+                    {
+                        //https://docs.microsoft.com/de-de/aspnet/core/signalr/authn-and-authz?view=aspnetcore-2.1
+                        if (contextTokenAddPaths != null)
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+
+                            bool matchesAny = false;
+
+                            if (!string.IsNullOrEmpty(accessToken))
+                            {
+                                // If the request is for our hub...
+                                var path = context.HttpContext.Request.Path;
+
+                                foreach (var s in contextTokenAddPaths)
+                                {
+                                    if (path.StartsWithSegments(s))
+                                    {
+                                        matchesAny = true;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (matchesAny)
+                            {
+                                // Read the token out of the query string
+                                context.Token = accessToken;
+                            }
+                        }
+
+                        return Task.CompletedTask;
                     }
                 };
             });
