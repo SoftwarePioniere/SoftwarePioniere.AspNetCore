@@ -25,7 +25,7 @@ namespace SoftwarePioniere.AspNetCore
         {
             if (env.IsDevelopment())
             {
-                loggerConfiguration.MinimumLevel.Debug();
+              //loggerConfiguration.MinimumLevel.Debug();
             }
 
             return loggerConfiguration;
