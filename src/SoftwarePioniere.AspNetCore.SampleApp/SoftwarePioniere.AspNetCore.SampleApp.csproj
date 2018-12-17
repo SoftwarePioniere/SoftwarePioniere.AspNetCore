@@ -1,18 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <IsPackable>False</IsPackable>
     <!-- <UserSecretsId>c1393566-66cf-4f3a-940f-1f27e6dd86b2</UserSecretsId> -->
   </PropertyGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
-
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.5" />
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
