@@ -27,6 +27,7 @@ namespace SoftwarePioniere.AspNetCore
         public string IssuerSigningKey { get; set; }
         public string Resource { get; set; }
         public string AdminGroupId { get; set; }
+        public string SwaggerClientId { get; set; }
     }
 
     public static class AzureAdAuthenticationBuilderExtensions
