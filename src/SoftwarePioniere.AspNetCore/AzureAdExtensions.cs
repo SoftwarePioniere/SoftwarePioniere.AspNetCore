@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable CheckNamespace
@@ -32,8 +33,8 @@ namespace SoftwarePioniere.AspNetCore
 
     public static class AzureAdAuthenticationBuilderExtensions
     {
-     
-        public static AuthenticationBuilder AddAzureAd(this AuthenticationBuilder builder, Action<AzureAdOptions> configureOptions, string[] contextTokenAddPaths = null)
+
+        public static AuthenticationBuilder AddAzureAd(this AuthenticationBuilder builder, Action<AzureAdOptions> configureOptions, string[] contextTokenAddPaths = null, Action<AuthorizationOptions> configureAuthorization = null)
         {
             Console.WriteLine("AddAzureAd");
 
@@ -47,7 +48,7 @@ namespace SoftwarePioniere.AspNetCore
                 ValidateIssuer = true,
                 ValidIssuer = settings.IssuerUrl,
                 ValidateAudience = true,
-                ValidAudience = settings.Resource                
+                ValidAudience = settings.Resource
             };
 
             if (!string.IsNullOrEmpty(settings.IssuerSigningKey) && !string.Equals(settings.IssuerSigningKey, "XXX", StringComparison.InvariantCultureIgnoreCase))
@@ -64,8 +65,8 @@ namespace SoftwarePioniere.AspNetCore
                 options.ClaimsIssuer = settings.IssuerUrl;
                 options.RequireHttpsMetadata = false;
                 options.SaveToken = true;
-                options.TokenValidationParameters = tokenValParam;  
-                
+                options.TokenValidationParameters = tokenValParam;
+
                 options.Events = new JwtBearerEvents
                 {
                     OnTokenValidated = context =>
@@ -123,6 +124,7 @@ namespace SoftwarePioniere.AspNetCore
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("admin", policy => policy.RequireClaim("groups", settings.AdminGroupId));
+                configureAuthorization?.Invoke(options);
             });
 
             return builder;
