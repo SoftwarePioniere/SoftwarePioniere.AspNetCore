@@ -11,11 +11,7 @@ namespace SoftwarePioniere.AspNetCore.SampleApp
     [ApiExplorerSettings(GroupName = "test")]
     public class TestController : ControllerBase
     {
-
-        /// <summary>
-        /// Alle Claims des Benutzers auslesen
-        /// </summary>
-        /// <returns></returns>
+       
         [HttpGet("claims")]
         [Authorize]
         [SwaggerOperation(OperationId = "GetIdentityClaims")]

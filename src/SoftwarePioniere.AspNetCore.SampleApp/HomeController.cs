@@ -8,11 +8,7 @@ namespace SoftwarePioniere.AspNetCore.SampleApp
     [ApiController]
     [ApiExplorerSettings(GroupName = "api")]
     public class HomeController : ControllerBase
-    {
-        /// <summary>
-        /// Infos zur API auslesen
-        /// </summary>
-        /// <returns></returns>
+    {    
         [HttpGet("info")]
         [SwaggerOperation(OperationId = "GetApiInfo")]
         public ActionResult<ApiInfo> GetApiInfo()

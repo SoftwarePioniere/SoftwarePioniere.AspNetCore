@@ -19,6 +19,7 @@ namespace SoftwarePioniere.AspNetCore
         public string Domain => $"https://{TenantId}/";
         public string Audience { get; set; }
         public string AdminGroupId { get; set; }
+        public string UserGroupId { get; set; }
         public string GroupClaimType { get; set; } = "http://softwarepioniere.de/groups";
         public string SwaggerClientId { get; set; }
         public string SwaggerClientSecret { get; set; }
@@ -96,7 +97,11 @@ namespace SoftwarePioniere.AspNetCore
             Console.WriteLine("AddAuth0: Adding AddAuthorization Admin Policy");
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy("admin", policy => policy.RequireClaim(settings.GroupClaimType, settings.AdminGroupId));
+                options.AddPolicy(Constants.IsAdminPolicy, policy => policy.RequireClaim(settings.GroupClaimType, settings.AdminGroupId));
+                if (!string.IsNullOrEmpty(settings.UserGroupId))
+                {
+                    options.AddPolicy(Constants.IsUserPolicy, policy => policy.RequireClaim(settings.GroupClaimType, settings.UserGroupId));
+                }
             });
 
             return builder;

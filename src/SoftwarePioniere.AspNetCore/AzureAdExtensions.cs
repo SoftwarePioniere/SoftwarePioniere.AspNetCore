@@ -28,6 +28,7 @@ namespace SoftwarePioniere.AspNetCore
         public string IssuerSigningKey { get; set; }
         public string Resource { get; set; }
         public string AdminGroupId { get; set; }
+        public string UserGroupId { get; set; }
         public string SwaggerClientId { get; set; }
     }
 
@@ -123,7 +124,13 @@ namespace SoftwarePioniere.AspNetCore
             Console.WriteLine("AddAzureAd: Adding AddAuthorization Admin Policy");
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy("admin", policy => policy.RequireClaim("groups", settings.AdminGroupId));
+                options.AddPolicy(Constants.IsAdminPolicy, policy => policy.RequireClaim("groups", settings.AdminGroupId));
+
+                if (!string.IsNullOrEmpty(settings.UserGroupId))
+                {
+                    options.AddPolicy(Constants.IsAdminPolicy, policy => policy.RequireClaim("groups", settings.UserGroupId));
+                }
+
                 configureAuthorization?.Invoke(options);
             });
 
@@ -131,8 +138,6 @@ namespace SoftwarePioniere.AspNetCore
 
         }
     }
-
-
 }
 
 

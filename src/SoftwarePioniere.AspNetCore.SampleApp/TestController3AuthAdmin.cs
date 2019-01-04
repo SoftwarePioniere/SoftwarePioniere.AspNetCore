@@ -11,13 +11,24 @@ namespace SoftwarePioniere.AspNetCore.SampleApp
     [Authorize(Policy = "admin")]
     public class TestController3AuthAdmin : ControllerBase
     {
-
-        /// <summary>
-        /// Alle Claims des Benutzers auslesen
-        /// </summary>
-        /// <returns></returns>
+      
         [HttpGet("claims")]      
         [SwaggerOperation(OperationId = "GetIdentityClaims3")]
+        public ActionResult<ClaimInfo[]> GetClaims()
+        {
+            return User.Claims.Select(c => new ClaimInfo { Type = c.Type, Value = c.Value }).ToArray();
+        }       
+    }
+
+    [Route("api/test4")]
+    [ApiController]
+    [ApiExplorerSettings(GroupName = "test")]
+    [AuthorizeAdmin]
+    public class TestController4AuthAdmin : ControllerBase
+    {
+      
+        [HttpGet("claims")]      
+        [SwaggerOperation(OperationId = "GetIdentityClaims4")]
         public ActionResult<ClaimInfo[]> GetClaims()
         {
             return User.Claims.Select(c => new ClaimInfo { Type = c.Type, Value = c.Value }).ToArray();
