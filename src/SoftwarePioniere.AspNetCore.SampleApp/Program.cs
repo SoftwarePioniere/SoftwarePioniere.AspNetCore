@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Serilog;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace SoftwarePioniere.AspNetCore.SampleApp
@@ -21,7 +20,7 @@ namespace SoftwarePioniere.AspNetCore.SampleApp
             var builder = WebHost.CreateDefaultBuilder(args)
                 .ConfigureServices(ConfigureAppServices)
                 .Configure(ConfigureApplication)
-                .UseSerilog((context, configuration) => context.ConfigureSerilog(configuration))
+            //    .UseSerilog((context, configuration) => context.ConfigureSerilog(configuration))
                 ;
 
             var host = builder.Build();
@@ -35,7 +34,7 @@ namespace SoftwarePioniere.AspNetCore.SampleApp
             app
                 .UseAuthentication()
                 .UseMvc()
-                .UseMySeriLogging()
+            //    .UseMySeriLogging()
                 .UseMySwagger(c =>
                 {
                     c.Docs = new[] { "api", "test" };
