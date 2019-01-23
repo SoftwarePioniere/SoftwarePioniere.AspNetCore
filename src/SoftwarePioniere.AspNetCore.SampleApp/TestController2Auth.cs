@@ -30,8 +30,8 @@ namespace SoftwarePioniere.AspNetCore.SampleApp
 
             return new ApiInfo
             {
-                Title = assembly.GetCustomAttribute<AssemblyTitleAttribute>()?.Title ?? assembly.GetName().Name,
-                Version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion,               
+                Title1 = assembly.GetCustomAttribute<AssemblyTitleAttribute>()?.Title ?? assembly.GetName().Name,
+                Version1 = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion,               
             };
         }
     }

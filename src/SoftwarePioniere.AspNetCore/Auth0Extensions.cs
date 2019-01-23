@@ -23,17 +23,25 @@ namespace SoftwarePioniere.AspNetCore
         public string GroupClaimType { get; set; } = "http://softwarepioniere.de/groups";
         public string SwaggerClientId { get; set; }
         public string SwaggerClientSecret { get; set; }
+
+        public string ContextTokenAddPaths { get; set; }
     }
 
     public static class Auth0AuthenticationBuilderExtensions
     {
-        public static AuthenticationBuilder AddAuth0(this AuthenticationBuilder builder, Action<Auth0Options> configureOptions, string[] contextTokenAddPaths = null)
+        public static AuthenticationBuilder AddAuth0(this AuthenticationBuilder builder, Action<Auth0Options> configureOptions)
         {
             Console.WriteLine("AddAuth0");
 
             Console.WriteLine("AddAuth0: Adding Configuration");
             builder.Services.Configure(configureOptions);
             var settings = builder.Services.BuildServiceProvider().GetService<IOptions<Auth0Options>>().Value;
+
+            string[] contextTokenAddPaths = null;
+            if (!string.IsNullOrEmpty(settings.ContextTokenAddPaths))
+            {
+                contextTokenAddPaths = settings.ContextTokenAddPaths.Split(';');
+            }
 
             Console.WriteLine("AddAuth0: Adding JwtBeaerer");
             builder.AddJwtBearer(options =>

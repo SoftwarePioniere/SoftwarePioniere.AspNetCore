@@ -55,7 +55,7 @@ namespace SoftwarePioniere.AspNetCore
             setupAction(options);
 
             services.AddSwaggerGen(c =>
-            {
+            {                
                 foreach (var doc in options.Docs)
                 {
                     c.SwaggerDoc(doc, new Info

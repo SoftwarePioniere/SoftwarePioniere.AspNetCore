@@ -71,7 +71,7 @@ namespace SoftwarePioniere.AspNetCore.SampleApp
                 
                 var scopes = new Dictionary<string, string>();
                 scopes.Add("admin", "admin access");
-
+                
                 var auth0Options = services.BuildServiceProvider().GetService<IOptions<Auth0Options>>().Value;
                 c.OAuth2Scheme = new OAuth2Scheme
                 {

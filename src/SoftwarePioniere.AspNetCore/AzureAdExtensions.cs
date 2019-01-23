@@ -30,12 +30,13 @@ namespace SoftwarePioniere.AspNetCore
         public string AdminGroupId { get; set; }
         public string UserGroupId { get; set; }
         public string SwaggerClientId { get; set; }
+        public string ContextTokenAddPaths { get; set; }
     }
 
     public static class AzureAdAuthenticationBuilderExtensions
     {
 
-        public static AuthenticationBuilder AddAzureAd(this AuthenticationBuilder builder, Action<AzureAdOptions> configureOptions, string[] contextTokenAddPaths = null, Action<AuthorizationOptions> configureAuthorization = null)
+        public static AuthenticationBuilder AddAzureAd(this AuthenticationBuilder builder, Action<AzureAdOptions> configureOptions, Action<AuthorizationOptions> configureAuthorization = null)
         {
             Console.WriteLine("AddAzureAd");
 
@@ -56,6 +57,12 @@ namespace SoftwarePioniere.AspNetCore
             {
                 tokenValParam.ValidateIssuerSigningKey = true;
                 tokenValParam.IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(settings.IssuerSigningKey));
+            }
+
+            string[] contextTokenAddPaths = null;
+            if (!string.IsNullOrEmpty(settings.ContextTokenAddPaths))
+            {
+                contextTokenAddPaths = settings.ContextTokenAddPaths.Split(';');
             }
 
             Console.WriteLine("AddAzureAd: Adding JwtBeaerer");

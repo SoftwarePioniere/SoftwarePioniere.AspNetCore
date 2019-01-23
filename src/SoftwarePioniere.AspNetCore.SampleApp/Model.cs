@@ -1,14 +1,22 @@
-﻿namespace SoftwarePioniere.AspNetCore.SampleApp
+﻿using Newtonsoft.Json;
+
+namespace SoftwarePioniere.AspNetCore.SampleApp
 {
     public class ApiInfo
     {
-        public string Title { get; set; }
-        public string Version { get; set; }
+        [JsonProperty("title")]
+        public string Title1 { get; set; }
+
+        [JsonProperty("version")]
+        public string Version1 { get; set; }
     }
 
     public class ClaimInfo
     {
+        [JsonProperty("type")]
         public string Type { get; set; }
+
+        [JsonProperty("value")]
         public string Value { get; set; }
     }
 }
