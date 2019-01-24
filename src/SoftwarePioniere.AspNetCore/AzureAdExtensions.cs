@@ -42,40 +42,42 @@ namespace SoftwarePioniere.AspNetCore
 
             Console.WriteLine("AddAzureAd: Adding Configuration");
             builder.Services.Configure(configureOptions);
-            var settings = builder.Services.BuildServiceProvider().GetService<IOptions<AzureAdOptions>>().Value;
+
+            var azureAdOptions = new AzureAdOptions();
+            configureOptions(azureAdOptions);
 
             var tokenValParam = new TokenValidationParameters()
             {
                 ValidateLifetime = true,
                 ValidateIssuer = true,
-                ValidIssuer = settings.IssuerUrl,
+                ValidIssuer = azureAdOptions.IssuerUrl,
                 ValidateAudience = true,
-                ValidAudience = settings.Resource
+                ValidAudience = azureAdOptions.Resource
             };
 
-            if (!string.IsNullOrEmpty(settings.IssuerSigningKey) && !string.Equals(settings.IssuerSigningKey, "XXX", StringComparison.InvariantCultureIgnoreCase))
+            if (!string.IsNullOrEmpty(azureAdOptions.IssuerSigningKey) && !string.Equals(azureAdOptions.IssuerSigningKey, "XXX", StringComparison.InvariantCultureIgnoreCase))
             {
                 tokenValParam.ValidateIssuerSigningKey = true;
-                tokenValParam.IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(settings.IssuerSigningKey));
+                tokenValParam.IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(azureAdOptions.IssuerSigningKey));
             }
 
             string[] contextTokenAddPaths = null;
-            if (!string.IsNullOrEmpty(settings.ContextTokenAddPaths))
+            if (!string.IsNullOrEmpty(azureAdOptions.ContextTokenAddPaths))
             {
-                contextTokenAddPaths = settings.ContextTokenAddPaths.Split(';');
+                contextTokenAddPaths = azureAdOptions.ContextTokenAddPaths.Split(';');
             }
 
             Console.WriteLine("AddAzureAd: Adding JwtBeaerer");
-            builder.AddJwtBearer(options =>
+            builder.AddJwtBearer(jwtBearerOptions =>
             {
-                options.Audience = settings.Resource;
-                options.Authority = settings.Authority;
-                options.ClaimsIssuer = settings.IssuerUrl;
-                options.RequireHttpsMetadata = false;
-                options.SaveToken = true;
-                options.TokenValidationParameters = tokenValParam;
+                jwtBearerOptions.Audience = azureAdOptions.Resource;
+                jwtBearerOptions.Authority = azureAdOptions.Authority;
+                jwtBearerOptions.ClaimsIssuer = azureAdOptions.IssuerUrl;
+                jwtBearerOptions.RequireHttpsMetadata = false;
+                jwtBearerOptions.SaveToken = true;
+                jwtBearerOptions.TokenValidationParameters = tokenValParam;
 
-                options.Events = new JwtBearerEvents
+                jwtBearerOptions.Events = new JwtBearerEvents
                 {
                     OnTokenValidated = context =>
                     {
@@ -84,7 +86,7 @@ namespace SoftwarePioniere.AspNetCore
                             if (context.Principal.Identity is ClaimsIdentity identity)
                             {
                                 identity.AddClaim(new Claim("access_token", token.RawData));
-                                identity.AddClaim(new Claim("tenant", settings.TenantId));
+                                identity.AddClaim(new Claim("tenant", azureAdOptions.TenantId));
                                 identity.AddClaim(new Claim("provider", "aad"));
                             }
                         }
@@ -129,16 +131,16 @@ namespace SoftwarePioniere.AspNetCore
             });
 
             Console.WriteLine("AddAzureAd: Adding AddAuthorization Admin Policy");
-            builder.Services.AddAuthorization(options =>
+            builder.Services.AddAuthorization(authorizationOptions =>
             {
-                options.AddPolicy(Constants.IsAdminPolicy, policy => policy.RequireClaim("groups", settings.AdminGroupId));
+                authorizationOptions.AddPolicy(Constants.IsAdminPolicy, policy => policy.RequireClaim("groups", azureAdOptions.AdminGroupId));
 
-                if (!string.IsNullOrEmpty(settings.UserGroupId))
+                if (!string.IsNullOrEmpty(azureAdOptions.UserGroupId))
                 {
-                    options.AddPolicy(Constants.IsAdminPolicy, policy => policy.RequireClaim("groups", settings.UserGroupId));
+                    authorizationOptions.AddPolicy(Constants.IsAdminPolicy, policy => policy.RequireClaim("groups", azureAdOptions.UserGroupId));
                 }
 
-                configureAuthorization?.Invoke(options);
+                configureAuthorization?.Invoke(authorizationOptions);
             });
 
             return builder;

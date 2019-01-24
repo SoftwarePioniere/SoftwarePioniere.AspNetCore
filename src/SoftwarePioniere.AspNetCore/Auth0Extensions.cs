@@ -34,22 +34,23 @@ namespace SoftwarePioniere.AspNetCore
             Console.WriteLine("AddAuth0");
 
             Console.WriteLine("AddAuth0: Adding Configuration");
-            builder.Services.Configure(configureOptions);
-            var settings = builder.Services.BuildServiceProvider().GetService<IOptions<Auth0Options>>().Value;
+
+            var auth0Options = new Auth0Options();
+            configureOptions(auth0Options);
 
             string[] contextTokenAddPaths = null;
-            if (!string.IsNullOrEmpty(settings.ContextTokenAddPaths))
+            if (!string.IsNullOrEmpty(auth0Options.ContextTokenAddPaths))
             {
-                contextTokenAddPaths = settings.ContextTokenAddPaths.Split(';');
+                contextTokenAddPaths = auth0Options.ContextTokenAddPaths.Split(';');
             }
 
             Console.WriteLine("AddAuth0: Adding JwtBeaerer");
-            builder.AddJwtBearer(options =>
+            builder.AddJwtBearer(jwtBearerOptions =>
             {
-                options.Audience = settings.Audience;
-                options.Authority = settings.Domain;
+                jwtBearerOptions.Audience = auth0Options.Audience;
+                jwtBearerOptions.Authority = auth0Options.Domain;
 
-                options.Events = new JwtBearerEvents
+                jwtBearerOptions.Events = new JwtBearerEvents
                 {
                     OnTokenValidated = context =>
                     {
@@ -58,7 +59,7 @@ namespace SoftwarePioniere.AspNetCore
                             if (context.Principal.Identity is ClaimsIdentity identity)
                             {
                                 identity.AddClaim(new Claim("access_token", token.RawData));
-                                identity.AddClaim(new Claim("tenant", settings.TenantId));
+                                identity.AddClaim(new Claim("tenant", auth0Options.TenantId));
                                 identity.AddClaim(new Claim("provider", "auth0"));
                             }
                         }
@@ -103,12 +104,12 @@ namespace SoftwarePioniere.AspNetCore
             });
 
             Console.WriteLine("AddAuth0: Adding AddAuthorization Admin Policy");
-            builder.Services.AddAuthorization(options =>
+            builder.Services.AddAuthorization(authorizationOptions =>
             {
-                options.AddPolicy(Constants.IsAdminPolicy, policy => policy.RequireClaim(settings.GroupClaimType, settings.AdminGroupId));
-                if (!string.IsNullOrEmpty(settings.UserGroupId))
+                authorizationOptions.AddPolicy(Constants.IsAdminPolicy, policy => policy.RequireClaim(auth0Options.GroupClaimType, auth0Options.AdminGroupId));
+                if (!string.IsNullOrEmpty(auth0Options.UserGroupId))
                 {
-                    options.AddPolicy(Constants.IsUserPolicy, policy => policy.RequireClaim(settings.GroupClaimType, settings.UserGroupId));
+                    authorizationOptions.AddPolicy(Constants.IsUserPolicy, policy => policy.RequireClaim(auth0Options.GroupClaimType, auth0Options.UserGroupId));
                 }
             });
 
